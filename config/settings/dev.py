@@ -1,5 +1,6 @@
-from config.settings.base import *  # noqa: F403,F405
 from decouple import config
+
+from config.settings.base import *  # noqa: F403,F405
 
 DEBUG = config("DEBUG", default=True, cast=bool)
 SECRET_KEY = config("SECRET_KEY", default="dev-secret")
