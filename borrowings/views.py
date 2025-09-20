@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
+from base.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.models import Borrowing
 from borrowings.serializers import (
     BorrowingCreateSerializer,
@@ -8,7 +9,6 @@ from borrowings.serializers import (
     BorrowingListSerializer,
     BorrowingSerializer,
 )
-from base.permissions import IsAdminOrIfAuthenticatedReadOnly
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
