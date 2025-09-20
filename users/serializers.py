@@ -55,7 +55,7 @@ class ManageUserSerializer(UserSerializer):
             "current_password",
             "new_password",
         )
-        read_only_fields = ("id", "is_staff")
+        read_only_fields = ("id", "email", "is_staff")
 
     def validate(self, attrs):
         """
