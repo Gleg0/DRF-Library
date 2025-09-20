@@ -1,6 +1,18 @@
+from datetime import timedelta
+
 from decouple import config
 
 from config.settings.base import *  # noqa: F403,F405
+
+DEBUG = config("DEBUG", default=False, cast=bool)
+SECRET_KEY = config("SECRET_KEY")
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="127.0.0.1,localhost",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+)
+
+INSTALLED_APPS += ["django_extensions"]  # noqa: F403,F405
 
 DATABASES = {
     "default": {
@@ -12,3 +24,14 @@ DATABASES = {
         "PORT": config("DB_PORT", default="5432"),
     }
 }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+}
+
+MESSAGE_TELEGRAM_BOT_TOKEN = (
+    config("TELEGRAM_BOT_TOKEN")
+)
