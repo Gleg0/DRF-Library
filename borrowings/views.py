@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from borrowings.models import Borrowing
 from borrowings.serializers import (
@@ -7,6 +8,7 @@ from borrowings.serializers import (
     BorrowingListSerializer,
     BorrowingSerializer,
 )
+from base.permissions import IsAdminOrIfAuthenticatedReadOnly
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
@@ -30,3 +32,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         elif self.action == "create":
             return BorrowingCreateSerializer
         return BorrowingSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "create"]:
+            return [IsAuthenticated()]
+        return [IsAdminOrIfAuthenticatedReadOnly()]
