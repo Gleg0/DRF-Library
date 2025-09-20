@@ -27,7 +27,7 @@ class Payment(models.Model):
     borrowing = ForeignKey(
         Borrowing,
         on_delete=models.CASCADE,
-        related_name="borrowings",
+        related_name="payments",
     )
     session_url = models.URLField()
     session_id = models.CharField(max_length=255)
@@ -39,4 +39,4 @@ class Payment(models.Model):
     )
 
     def __str__(self):
-        return f"Payment id: {self.id}"
+        return f"Payment {self.id} - {self.type} - {self.status}"
