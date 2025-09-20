@@ -49,13 +49,12 @@ class ManageUserSerializer(UserSerializer):
         model = User
         fields = (
             "id",
-            "email",
             "first_name",
             "last_name",
             "current_password",
             "new_password",
         )
-        read_only_fields = ("id", "email", "is_staff")
+        read_only_fields = ("id", "is_staff")
 
     def validate(self, attrs):
         """
@@ -78,12 +77,10 @@ class ManageUserSerializer(UserSerializer):
         return attrs
 
     def update(self, instance, validated_data):
-        email = validated_data.pop("email", instance.email)
         first_name = validated_data.pop("first_name", instance.first_name)
         last_name = validated_data.pop("last_name", instance.last_name)
         new_password = validated_data.pop("new_password", None)
 
-        instance.email = email
         instance.first_name = first_name
         instance.last_name = last_name
 
