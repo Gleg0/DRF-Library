@@ -19,6 +19,4 @@ class Book(models.Model):
 
     def __str__(self):
         return (
-            f"{self.title} - price per day {self.daily_fee}$."
-            f" {self.inventory} is available"
-        )
+            f"{self.title} - {self.author}")
