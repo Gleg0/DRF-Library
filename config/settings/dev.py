@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from decouple import config
 
 from config.settings.base import *  # noqa: F403,F405
@@ -19,3 +21,9 @@ DATABASES = {
     }
 }
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+}
