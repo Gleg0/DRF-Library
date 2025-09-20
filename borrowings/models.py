@@ -19,5 +19,17 @@ class Borrowing(models.Model):
         related_name="borrowings",
     )
 
+    @staticmethod
+    def validate_expected_return_date(
+        borrow_date, expected_return, error_to_raise
+    ):
+        if expected_return <= borrow_date:
+            raise error_to_raise(
+                {
+                    "expected_date": "Expected return date "
+                    "must be after the borrow date"
+                }
+            )
+
     def __str__(self):
         return f"{self.user} take {self.book}"
