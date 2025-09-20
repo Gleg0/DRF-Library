@@ -32,6 +32,6 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": False,
 }
 
-MESSAGE_TELEGRAM_BOT_TOKEN = (
-    config("TELEGRAM_BOT_TOKEN", default="telegram-token")
+MESSAGE_TELEGRAM_BOT_TOKEN = config(
+    "TELEGRAM_BOT_TOKEN", default="telegram-token"
 )
