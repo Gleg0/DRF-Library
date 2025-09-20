@@ -16,5 +16,5 @@ class BookViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list":
-            return (AllowAny,)
-        return (IsAdminOrIfAuthenticatedReadOnly,)
+            return [AllowAny()]
+        return [IsAdminOrIfAuthenticatedReadOnly()]
