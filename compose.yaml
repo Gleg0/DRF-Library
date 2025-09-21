@@ -12,6 +12,7 @@ services:
       - redis
     volumes:
       - .:/app
+    working_dir: /app
     command: >
         sh -c "python manage.py collectstatic --noinput &&
                python manage.py makemigrations &&
@@ -37,9 +38,10 @@ services:
       - .env
     container_name: celery
     restart: always
-    command: sh -c "celery -A config worker --loglevel=info"
+    working_dir: /app
+    command: celery -A config worker --loglevel=info
     volumes:
-      - .:/usr/src
+      - .:/app
     depends_on:
       - db
       - redis
@@ -50,27 +52,28 @@ services:
 
   celery-beat:
     build: .
-    command: celery -A config beat -l info
-    volumes:
-      - .:/app
     env_file:
       - .env
+    working_dir: /app
+    command: celery -A config beat --loglevel=info
+    volumes:
+      - .:/app
     depends_on:
       - db
       - redis
-      - server
+      - celery
 
   celery-flower:
-    build:
-      context: .
+    build: .
     container_name: celery-flower
     restart: always
     ports:
       - "5555:5555"
+    working_dir: /app
     depends_on:
       - redis
       - celery
-    command: sh -c "celery -A config flower --broker=${CELERY_BROKER_URL} --port=5555"
+    command: celery -A config --broker=${CELERY_BROKER_URL} flower --port=5555
     environment:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     volumes:
@@ -98,6 +101,7 @@ services:
   bot:
     build: .
     restart: always
+    working_dir: /app
     command: python manage.py run_bot
     volumes:
       - .:/app
@@ -105,6 +109,7 @@ services:
       - .env
     depends_on:
       - server
+      - celery
 
 volumes:
   db-data:

@@ -25,7 +25,10 @@ def borrowings_with_overdue() -> str:
 
     return list_response
 
-def new_borrowing(borrowing_id: str, user_name: str, book_title: str, expected_return: str):
+
+def new_borrowing(
+    borrowing_id: str, user_name: str, book_title: str, expected_return: str
+):
     return (
         f"✨ New Borrowing №{borrowing_id}\n\n"
         f"👤 User: {user_name}\n"
