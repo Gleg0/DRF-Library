@@ -14,7 +14,7 @@ class PaymentListRetrieveViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = self.queryset.all()
+        queryset = self.queryset.select_related("borrowing__book", "borrowing__user").order_by("-status")
 
         if self.request.user.is_staff:
             return queryset
