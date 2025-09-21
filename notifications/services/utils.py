@@ -9,8 +9,16 @@ def borrowings_with_overdue() -> str:
         expected_return__lt=today, actual_return_date__isnull=True
     )
     if info.exists():
-        list_response = "\n".join(
-            [f"{r.id}, must return {r.expected_return}" for r in info]
+        list_response = "\n\n".join(
+            [
+                (
+                    f"📌 Borrowing ID: {r.id}\n"
+                    f"👤 User: {r.user.email}\n"
+                    f"📖 Book: {r.book.title}\n"
+                    f"📅 Expected return: {r.expected_return}"
+                )
+                for r in info
+            ]
         )
     else:
         list_response = "Not found"
