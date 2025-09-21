@@ -1,7 +1,5 @@
 from celery import shared_task
-
 from notifications.tg_bot import send_message
-
 
 @shared_task
 def notify(user_name: str, book_title: str, expected_return: str) -> None:
