@@ -24,3 +24,11 @@ def borrowings_with_overdue() -> str:
         list_response = "Not found"
 
     return list_response
+
+def new_borrowing(borrowing_id: str, user_name: str, book_title: str, expected_return: str):
+    return (
+        f"✨ New Borrowing №{borrowing_id}\n\n"
+        f"👤 User: {user_name}\n"
+        f"📖 Book: {book_title}\n"
+        f"📅 Expected return: {expected_return}"
+    )

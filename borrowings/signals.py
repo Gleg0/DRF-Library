@@ -19,6 +19,7 @@ def create_payment(sender, instance, created, **kwargs):
             session_id="",
         )
         notify_borrowings.delay(
+            borrowing_id=instance.id,
             user_name=instance.user.email,
             book_title=instance.book.title,
             expected_return=instance.expected_return,

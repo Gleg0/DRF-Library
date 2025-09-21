@@ -10,12 +10,5 @@ def notify_daily() -> None:
 
 
 @shared_task
-def notify_borrowings(
-    user_name: str, book_title: str, expected_return: str
-) -> None:
-    message = (
-        f"New Borrowing\n"
-        f"{user_name} took {book_title}\n"
-        f"Expected return: {expected_return}"
-    )
-    send_message(message)
+def notify_borrowings(*args, **kwargs) -> None:
+    send_message(utils.new_borrowing(*args, **kwargs))
