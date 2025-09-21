@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from base.permissions import IsAdminOrIfAuthenticatedReadOnly
 from borrowings.models import Borrowing
 from borrowings.serializers import (
+    BorrowingAdminDetailSerializer,
+    BorrowingAdminListSerializer,
     BorrowingCreateSerializer,
     BorrowingDetailSerializer,
     BorrowingListSerializer,
@@ -20,15 +22,19 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
 
-        if self.action == "list":
+        if self.action == "list" and not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_serializer_class(self):
         if self.action == "list":
-            return BorrowingListSerializer
+            if not self.request.user.is_staff:
+                return BorrowingListSerializer
+            return BorrowingAdminListSerializer
         elif self.action == "retrieve":
-            return BorrowingDetailSerializer
+            if not self.request.user.is_staff:
+                return BorrowingDetailSerializer
+            return BorrowingAdminDetailSerializer
         elif self.action == "create":
             return BorrowingCreateSerializer
         return BorrowingSerializer
