@@ -48,6 +48,18 @@ services:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
 
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - server
+
   celery-flower:
     build:
       context: .
@@ -82,6 +94,17 @@ services:
       retries: 3
     volumes:
       - db-data:/var/lib/postgresql/data
+
+  bot:
+    build: .
+    restart: always
+    command: python manage.py run_bot
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - server
 
 volumes:
   db-data:

@@ -7,3 +7,4 @@ class BaseTelegramBotService:
 
     def send_message(self, chat_id: int, text: str, **kwargs):
         self._bot.send_message(chat_id, text, **kwargs)
+
