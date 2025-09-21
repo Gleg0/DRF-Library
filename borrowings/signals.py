@@ -2,6 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from borrowings.models import Borrowing
+from notifications.tasks import notify
 from payments.models import Payment
 
 
@@ -16,4 +17,9 @@ def create_payment(sender, instance, created, **kwargs):
             money_to_pay=total_count,
             session_url="",
             session_id="",
+        )
+        notify.delay(
+            user_name=instance.user.email,
+            book_title=instance.book.title,
+            expected_return=instance.expected_return,
         )
