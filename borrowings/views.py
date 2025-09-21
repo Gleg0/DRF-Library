@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from base.permissions import IsAdminOrIfAuthenticatedReadOnly
+from borrowings.filters import BorrowingFilter
 from borrowings.models import Borrowing
 from borrowings.serializers import (
     BorrowingAdminDetailSerializer,
@@ -15,6 +16,7 @@ from borrowings.serializers import (
 
 class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
+    filterset_class = BorrowingFilter
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
