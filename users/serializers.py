@@ -90,3 +90,13 @@ class ManageUserSerializer(UserSerializer):
         instance.save()
 
         return instance
+
+
+class UserListSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        fields = ("id", "email")
+
+
+class UserDetailSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        fields = ("id", "email", "full_name")

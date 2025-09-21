@@ -1,9 +1,13 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from base.permissions import IsAdminOrIfAuthenticatedReadOnly
+from borrowings.filters import BorrowingAdminFilter, BorrowingFilter
 from borrowings.models import Borrowing
 from borrowings.serializers import (
+    BorrowingAdminDetailSerializer,
+    BorrowingAdminListSerializer,
     BorrowingCreateSerializer,
     BorrowingDetailSerializer,
     BorrowingListSerializer,
@@ -13,6 +17,7 @@ from borrowings.serializers import (
 
 class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
+    filterset_class = BorrowingAdminFilter
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -20,15 +25,21 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
 
-        if self.action == "list":
+        if self.action == "list" and not self.request.user.is_staff:
             queryset = queryset.filter(user=self.request.user)
+            self.filterset_class = BorrowingFilter
+
         return queryset
 
     def get_serializer_class(self):
         if self.action == "list":
-            return BorrowingListSerializer
+            if not self.request.user.is_staff:
+                return BorrowingListSerializer
+            return BorrowingAdminListSerializer
         elif self.action == "retrieve":
-            return BorrowingDetailSerializer
+            if not self.request.user.is_staff:
+                return BorrowingDetailSerializer
+            return BorrowingAdminDetailSerializer
         elif self.action == "create":
             return BorrowingCreateSerializer
         return BorrowingSerializer

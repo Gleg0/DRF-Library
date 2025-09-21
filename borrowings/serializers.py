@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
 from books.serializers import BookListSerializer
 from borrowings.models import Borrowing
+from users.serializers import UserDetailSerializer, UserListSerializer
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -27,6 +29,20 @@ class BorrowingListSerializer(BorrowingSerializer):
 
 class BorrowingDetailSerializer(BorrowingSerializer):
     book = BookListSerializer(read_only=True)
+
+
+class BorrowingAdminListSerializer(BorrowingListSerializer):
+    user = UserListSerializer(read_only=True, many=False)
+
+    class Meta(BorrowingListSerializer.Meta):
+        fields = BorrowingListSerializer.Meta.fields + ("user",)
+
+
+class BorrowingAdminDetailSerializer(BorrowingListSerializer):
+    user = UserDetailSerializer(read_only=True, many=False)
+
+    class Meta(BorrowingListSerializer.Meta):
+        fields = BorrowingListSerializer.Meta.fields + ("user",)
 
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
