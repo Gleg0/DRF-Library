@@ -70,3 +70,21 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
 
         borrowing = Borrowing.objects.create(book=book, **validated_data)
         return borrowing
+
+
+class BorrowingReturnSerializer(BorrowingSerializer):
+    class Meta(BorrowingSerializer.Meta):
+        fields = ("id", "actual_return_date")
+
+    def update(self, instance, validated_data):
+        if instance.actual_return_date:
+            raise serializers.ValidationError("This book is already returned!")
+
+        instance.actual_return_date = timezone.now().date()
+
+        book = instance.book
+        book.inventory += 1
+        book.save()
+
+        instance.save()
+        return instance
