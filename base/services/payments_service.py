@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from urllib.parse import urlencode
 
 import stripe
 from django.conf import settings
@@ -25,8 +26,6 @@ class StripePaymentService(BasePaymentService):
     def create_payment_session(self, data: dict):
         success_url = f"{settings.HOST_DOMAIN}{reverse('payments:payment-success')}?session_id={{CHECKOUT_SESSION_ID}}"
         cancel_url = f"{settings.HOST_DOMAIN}{reverse('payments:payment-cancel')}?session_id={{CHECKOUT_SESSION_ID}}"
-        print(success_url)
-        print(cancel_url)
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[
