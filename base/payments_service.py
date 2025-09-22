@@ -15,6 +15,10 @@ class BasePaymentService(ABC):
     def is_paid(self, session_id):
         pass
 
+    @abstractmethod
+    def mark_session_as_expired(self, session_id):
+        pass
+
 
 class StripePaymentService(BasePaymentService):
     def create_payment_session(self, data: dict):
@@ -33,11 +37,23 @@ class StripePaymentService(BasePaymentService):
                 }
             ],
             mode="payment",
-            success_url=f"http://127.0.0.1:8000/api/payments/success/?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"http://127.0.0.1:8000/api/payments/cancel/?session_id={{CHECKOUT_SESSION_ID}}",
+            success_url=(
+                "http://127.0.0.1:8000/"
+                "api/payments/success/"
+                "?session_id={CHECKOUT_SESSION_ID}"
+            ),
+            cancel_url=(
+                "http://127.0.0.1:8000/"
+                "api/payments/cancel/"
+                "?session_id={CHECKOUT_SESSION_ID}"
+            ),
         )
         return session
 
     def is_paid(self, session_id):
         session = stripe.checkout.Session.retrieve(session_id)
         return session.payment_status == "paid"
+
+    def mark_session_as_expired(self, session_id):
+        session = stripe.checkout.Session.expire(session_id)
+        return session
