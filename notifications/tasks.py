@@ -13,6 +13,7 @@ def notify_daily() -> None:
 def notify_borrowings(*args, **kwargs) -> None:
     send_message(utils.new_borrowing(*args, **kwargs))
 
+
 @shared_task
 def notify_payment(*args, **kwargs):
     send_message(utils.payment_success(*args, **kwargs))

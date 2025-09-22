@@ -55,6 +55,7 @@ def create_payment(sender, instance, created, **kwargs):
                 session_id=session.id,
             )
 
+
 @receiver(post_save, sender=Payment)
 def payment_successes(sender, instance, created, **kwargs):
     if not created:

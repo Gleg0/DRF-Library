@@ -36,6 +36,7 @@ def new_borrowing(
         f"📅 Expected return: {expected_return}"
     )
 
+
 def payment_success(payment_id: int, payment_type: str, money_to_pay: float):
     return (
         f"💳 Payment №{payment_id}\n\n"
