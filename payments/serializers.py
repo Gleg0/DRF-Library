@@ -8,26 +8,51 @@ class PaymentListSerializer(serializers.ModelSerializer):
         read_only=True,
         source="borrowing.user.email",
     )
-
-    class Meta:
-        model = Payment
-        fields = ("id", "type", "status", "money_to_pay", "user")
-
-
-class PaymentDetailSerializer(serializers.ModelSerializer):
-    borrowing_id = serializers.IntegerField(
-        read_only=True,
-        source="borrowing.id",
-    )
     book = serializers.CharField(
         read_only=True,
         source="borrowing.book.title",
     )
-    user = serializers.CharField(
+    borrowing_id = serializers.IntegerField(
         read_only=True,
-        source="borrowing.user.email",
+        source="borrowing.id",
     )
 
+    class Meta:
+        model = Payment
+        fields = (
+            "id",
+            "borrowing_id",
+            "user",
+            "book",
+            "type",
+            "status",
+            "money_to_pay",
+        )
+
+
+class PaymentDetailSerializer(PaymentListSerializer):
+    class Meta:
+        model = Payment
+        fields = (
+            "id",
+            "borrowing_id",
+            "book",
+            "user",
+            "type",
+            "status",
+            "money_to_pay",
+            "session_url",
+            "session_id",
+        )
+
+
+class PaymentForBorrowingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ("id", "session_url", "session_id")
+
+
+class PaymentForBorrowingDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = (
@@ -35,9 +60,6 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
             "type",
             "status",
             "money_to_pay",
-            "borrowing_id",
-            "book",
-            "user",
             "session_url",
             "session_id",
         )
