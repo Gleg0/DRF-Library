@@ -30,6 +30,12 @@ class BorrowingListSerializer(BorrowingSerializer):
 class BorrowingDetailSerializer(BorrowingSerializer):
     book = BookListSerializer(read_only=True)
 
+    class Meta(BorrowingSerializer.Meta):
+        read_only_fields = BorrowingSerializer.Meta.read_only_fields + (
+            "expected_return",
+            "book",
+        )
+
 
 class BorrowingAdminListSerializer(BorrowingListSerializer):
     user = UserListSerializer(read_only=True, many=False)
@@ -38,17 +44,20 @@ class BorrowingAdminListSerializer(BorrowingListSerializer):
         fields = BorrowingListSerializer.Meta.fields + ("user",)
 
 
-class BorrowingAdminDetailSerializer(BorrowingListSerializer):
+class BorrowingAdminDetailSerializer(BorrowingDetailSerializer):
     user = UserDetailSerializer(read_only=True, many=False)
 
-    class Meta(BorrowingListSerializer.Meta):
-        fields = BorrowingListSerializer.Meta.fields + ("user",)
+    class Meta(BorrowingDetailSerializer.Meta):
+        fields = BorrowingDetailSerializer.Meta.fields + ("user",)
 
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
+    book_title = serializers.CharField(read_only=True, source="book.title")
+
     class Meta:
         model = Borrowing
-        fields = ("expected_return", "book")
+        fields = ("id", "expected_return", "book", "book_title")
+        extra_kwargs = {"book": {"write_only": True}}
 
     def validate_book(self, value):
         if value.inventory <= 0:
@@ -70,3 +79,7 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
 
         borrowing = Borrowing.objects.create(book=book, **validated_data)
         return borrowing
+
+
+class BorrowingReturnSerializer(BorrowingDetailSerializer):
+    book = serializers.CharField(read_only=True, source="book.title")
