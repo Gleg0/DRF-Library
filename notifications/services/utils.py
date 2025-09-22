@@ -35,3 +35,10 @@ def new_borrowing(
         f"📖 Book: {book_title}\n"
         f"📅 Expected return: {expected_return}"
     )
+
+def payment_success(payment_id: int, payment_type: str, money_to_pay: float):
+    return (
+        f"💳 Payment №{payment_id}\n\n"
+        f"📌 Type: {payment_type}\n"
+        f"💰 Amount: {money_to_pay}"
+    )

@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from base.services.payments_service import StripePaymentService
 from borrowings.models import Borrowing
-from notifications.tasks import notify_borrowings
+from notifications.tasks import notify_borrowings, notify_payment
 from payments.models import Payment
 
 
@@ -53,4 +53,14 @@ def create_payment(sender, instance, created, **kwargs):
                 money_to_pay=fine_day,
                 session_url=session.url,
                 session_id=session.id,
+            )
+
+@receiver(post_save, sender=Payment)
+def payment_successes(sender, instance, created, **kwargs):
+    if not created:
+        if instance.status == Payment.Status.PAID:
+            notify_payment.delay(
+                payment_id=instance.id,
+                payment_type=instance.type,
+                money_to_pay=instance.money_to_pay,
             )
