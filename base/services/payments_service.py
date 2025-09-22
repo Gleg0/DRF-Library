@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from urllib.parse import urlencode
 
 import stripe
 from django.conf import settings
