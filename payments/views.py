@@ -1,6 +1,16 @@
-from rest_framework import mixins, viewsets
+from django.db import transaction
+from django.db.models import F
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 
+from base.services.payments_service import StripePaymentService
+from books.models import Book
+from borrowings.models import Borrowing
 from payments.models import Payment
 from payments.serializers import PaymentDetailSerializer, PaymentListSerializer
 
@@ -26,3 +36,80 @@ class PaymentListRetrieveViewSet(
         if self.action == "list":
             return PaymentListSerializer
         return PaymentDetailSerializer
+
+    @action(detail=False, methods=["get"])
+    def success(self, request: Request):
+        """
+        Redirect after successful payment
+        """
+        session_id = request.query_params.get("session_id")
+
+        if not session_id:
+            return Response(
+                {"error": "No session_id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        payment = get_object_or_404(Payment, session_id=session_id)
+
+        if payment.status != Payment.Status.PENDING:
+            return Response(
+                {
+                    "error": (
+                        f"This payment was "
+                        f"already {payment.status.lower()}."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        payment_service = StripePaymentService()
+
+        if payment_service.is_paid(session_id):
+            payment.status = Payment.Status.PAID
+            payment.save()
+            return Response({"message": "Payment successful!"})
+
+        return Response({"message": "Payment not successful!"})
+
+    @action(detail=False, methods=["get"])
+    def cancel(self, request):
+        """
+        Redirect if payment was cancelled
+        """
+        session_id = request.query_params.get("session_id")
+
+        if not session_id:
+            return Response(
+                {"error": "No session_id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        payment = get_object_or_404(Payment, session_id=session_id)
+
+        if payment.status != Payment.Status.PENDING:
+            return Response(
+                {
+                    "error": (
+                        f"This payment was "
+                        f"already {payment.status.lower()}."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            payment.status = Payment.Status.CANCELLED
+            payment.save()
+            Borrowing.objects.filter(id=payment.borrowing_id).update(
+                actual_return_date=timezone.now()
+            )
+
+            payment_service = StripePaymentService()
+            payment_service.mark_session_as_expired(session_id)
+
+            Book.objects.filter(id=payment.borrowing.book_id).update(
+                inventory=F("inventory") + 1
+            )
+
+        return Response({"message": "Payment was cancelled."})
