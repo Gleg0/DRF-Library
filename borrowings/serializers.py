@@ -1,9 +1,12 @@
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
 from books.serializers import BookListSerializer
 from borrowings.models import Borrowing
+from payments.serializers import (
+    PaymentForBorrowingCreateSerializer,
+    PaymentForBorrowingDetailSerializer,
+)
 from users.serializers import UserDetailSerializer, UserListSerializer
 
 
@@ -29,8 +32,10 @@ class BorrowingListSerializer(BorrowingSerializer):
 
 class BorrowingDetailSerializer(BorrowingSerializer):
     book = BookListSerializer(read_only=True)
+    payments = PaymentForBorrowingDetailSerializer(many=True, read_only=True)
 
     class Meta(BorrowingSerializer.Meta):
+        fields = BorrowingSerializer.Meta.fields + ("payments",)
         read_only_fields = BorrowingSerializer.Meta.read_only_fields + (
             "expected_return",
             "book",
@@ -53,10 +58,11 @@ class BorrowingAdminDetailSerializer(BorrowingDetailSerializer):
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
     book_title = serializers.CharField(read_only=True, source="book.title")
+    payments = PaymentForBorrowingCreateSerializer(many=True, read_only=True)
 
     class Meta:
         model = Borrowing
-        fields = ("id", "expected_return", "book", "book_title")
+        fields = ("id", "expected_return", "book", "book_title", "payments")
         extra_kwargs = {"book": {"write_only": True}}
 
     def validate_book(self, value):
