@@ -35,7 +35,7 @@ def create_payment(sender, instance, created, **kwargs):
         )
     if not created:
         today = timezone.now().date()
-        if instance.expected_return < today:
+        if instance.actual_return_date and instance.expected_return < today:
             fine_day = (
                 (instance.actual_return_date - instance.expected_return).days
                 * instance.book.daily_fee
