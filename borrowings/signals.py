@@ -50,6 +50,7 @@ def create_payment(sender, instance, created, **kwargs):
 
             Payment.objects.create(
                 borrowing=instance,
+                type=Payment.Type.FINE,
                 money_to_pay=fine_day,
                 session_url=session.url,
                 session_id=session.id,
