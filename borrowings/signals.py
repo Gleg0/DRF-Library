@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from borrowings.models import Borrowing
 from notifications.tasks import notify_borrowings
@@ -24,3 +25,18 @@ def create_payment(sender, instance, created, **kwargs):
             book_title=instance.book.title,
             expected_return=instance.expected_return,
         )
+    if not created:
+        today = timezone.now().date()
+        if instance.expected_return < today:
+            fine_day = (
+                (instance.actual_return_date - instance.expected_return).days
+                * instance.book.daily_fee
+                * 2
+            )
+            Payment.objects.create(
+                type="FINE",
+                borrowing=instance,
+                money_to_pay=fine_day,
+                session_url="",
+                session_id="",
+            )
