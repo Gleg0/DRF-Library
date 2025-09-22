@@ -72,14 +72,6 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
         )
         return attrs
 
-    def create(self, validated_data):
-        book = validated_data.pop("book")
-        book.inventory -= 1
-        book.save()
-
-        borrowing = Borrowing.objects.create(book=book, **validated_data)
-        return borrowing
-
 
 class BorrowingReturnSerializer(BorrowingDetailSerializer):
     book = serializers.CharField(read_only=True, source="book.title")
