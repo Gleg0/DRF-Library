@@ -52,9 +52,12 @@ class BorrowingAdminDetailSerializer(BorrowingDetailSerializer):
 
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
+    book_title = serializers.CharField(read_only=True, source="book.title")
+
     class Meta:
         model = Borrowing
-        fields = ("expected_return", "book")
+        fields = ("id", "expected_return", "book", "book_title")
+        extra_kwargs = {"book": {"write_only": True}}
 
     def validate_book(self, value):
         if value.inventory <= 0:
