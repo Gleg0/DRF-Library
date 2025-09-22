@@ -9,18 +9,20 @@ class Payment(models.Model):
     class Status(models.TextChoices):
         PENDING = "PENDING", "Pending"
         PAID = "PAID", "Paid"
+        CANCELLED = "CANCELLED", "Cancelled"
+        EXPIRED = "EXPIRED", "Expired"
 
     class Type(models.TextChoices):
         PAYMENT = "PAYMENT", "Payment"
         FINE = "FINE", "Fine"
 
     status = models.CharField(
-        max_length=7,
+        max_length=10,
         choices=Status.choices,
         default=Status.PENDING,
     )
     type = models.CharField(
-        max_length=7,
+        max_length=10,
         choices=Type.choices,
         default=Type.PAYMENT,
     )
@@ -29,7 +31,7 @@ class Payment(models.Model):
         on_delete=models.CASCADE,
         related_name="payments",
     )
-    session_url = models.URLField()
+    session_url = models.URLField(max_length=1000)
     session_id = models.CharField(max_length=255)
     money_to_pay = models.DecimalField(
         max_digits=7,
