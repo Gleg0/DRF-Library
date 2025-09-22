@@ -30,6 +30,12 @@ class BorrowingListSerializer(BorrowingSerializer):
 class BorrowingDetailSerializer(BorrowingSerializer):
     book = BookListSerializer(read_only=True)
 
+    class Meta(BorrowingSerializer.Meta):
+        read_only_fields = BorrowingSerializer.Meta.read_only_fields + (
+            "expected_return",
+            "book",
+        )
+
 
 class BorrowingAdminListSerializer(BorrowingListSerializer):
     user = UserListSerializer(read_only=True, many=False)
@@ -38,11 +44,11 @@ class BorrowingAdminListSerializer(BorrowingListSerializer):
         fields = BorrowingListSerializer.Meta.fields + ("user",)
 
 
-class BorrowingAdminDetailSerializer(BorrowingListSerializer):
+class BorrowingAdminDetailSerializer(BorrowingDetailSerializer):
     user = UserDetailSerializer(read_only=True, many=False)
 
-    class Meta(BorrowingListSerializer.Meta):
-        fields = BorrowingListSerializer.Meta.fields + ("user",)
+    class Meta(BorrowingDetailSerializer.Meta):
+        fields = BorrowingDetailSerializer.Meta.fields + ("user",)
 
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
@@ -72,19 +78,5 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
         return borrowing
 
 
-class BorrowingReturnSerializer(BorrowingSerializer):
-    class Meta(BorrowingSerializer.Meta):
-        fields = ("id", "actual_return_date")
-
-    def update(self, instance, validated_data):
-        if instance.actual_return_date:
-            raise serializers.ValidationError("This book is already returned!")
-
-        instance.actual_return_date = timezone.now().date()
-
-        book = instance.book
-        book.inventory += 1
-        book.save()
-
-        instance.save()
-        return instance
+class BorrowingReturnSerializer(BorrowingDetailSerializer):
+    book = serializers.CharField(read_only=True, source="book.title")

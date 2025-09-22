@@ -16,6 +16,7 @@ from borrowings.serializers import (
     BorrowingReturnSerializer,
     BorrowingSerializer,
 )
+from borrowings.services.services import BorrowingService
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
@@ -25,12 +26,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="return")
     def borrowing_return(self, request, pk=None):
         borrowing = self.get_object()
-        serializer = self.get_serializer(
-            borrowing, data=request.data, partial=True
-        )
-
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        borrowing = BorrowingService.book_return(borrowing)
+        serializer = self.get_serializer(borrowing)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
