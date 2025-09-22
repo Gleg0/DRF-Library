@@ -105,6 +105,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "base.permissions.IsAdminOrIfAuthenticatedReadOnly",
     ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "TEST_REQUEST_RENDERER_CLASSES": (
@@ -137,9 +138,9 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
-CELERY_BROKER_URL = config("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "Europe/Kiev"
+timezone = "Europe/Kiev"
+result_backend = config("CELERY_RESULT_BACKEND")
+broker_url = config("CELERY_BROKER_URL")
+task_serializer = "json"
+result_serializer = "json"
+accept_content = ["json"]

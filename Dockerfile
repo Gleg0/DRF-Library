@@ -4,12 +4,16 @@ FROM python:${PYTHON_VERSION}-slim as base
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV TZ=Europe/Kiev
 
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
+    tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
