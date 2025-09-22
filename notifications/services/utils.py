@@ -9,7 +9,7 @@ def borrowings_with_overdue() -> str:
         expected_return__lt=today, actual_return_date__isnull=True
     )
     if info.exists():
-        list_response = "\n\n".join(
+        list_response = "📢 Outdate borrowings:\n\n" + "\n\n".join(
             [
                 (
                     f"📌 Borrowing ID: {r.id}\n"

@@ -24,6 +24,6 @@ def setup_periodic_tasks(sender, **kwargs):
     from notifications.tasks import notify_daily
 
     sender.add_periodic_task(
-        crontab(hour=10, day_of_week="mon-fri"),
+        crontab(hour=10, minute=0, day_of_week="mon-fri"),
         notify_daily.s(),
     )
