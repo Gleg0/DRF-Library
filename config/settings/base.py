@@ -144,3 +144,5 @@ broker_url = config("CELERY_BROKER_URL")
 task_serializer = "json"
 result_serializer = "json"
 accept_content = ["json"]
+
+HOST_DOMAIN = config("HOST_DOMAIN")
