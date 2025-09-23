@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -15,6 +15,7 @@ from borrowings.serializers import (
     BorrowingDetailSerializer,
     BorrowingListSerializer,
 )
+from borrowings.services.services import BorrowingService
 
 BORROWINGS_URL = reverse("borrowings:borrowing-list")
 
@@ -150,6 +151,27 @@ class AuthenticatedBorrowingApiTests(TestCase):
         res = self.client.post(BORROWINGS_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_borrowing_rolls_back_if_stripe_fails(self):
+        expected_return = datetime.date.today() + datetime.timedelta(days=2)
+
+        with patch(
+            "base.services.payments_service.StripePaymentService.create_payment_session",
+            new=MagicMock(side_effect=Exception("Stripe payment failed"))
+        ):
+            with self.assertRaises(Exception) as exc:
+                BorrowingService.create_borrowing(
+                    user=self.user,
+                    book=self.book,
+                    expected_return=expected_return
+                )
+
+            self.assertIn("Stripe payment failed", str(exc.exception))
+
+            self.assertFalse(Borrowing.objects.filter(book=self.book).exists())
+
+            self.book.refresh_from_db()
+            self.assertEqual(self.book.inventory, 5)
 
     def test_return_borrowing(self):
         borrowing = self.borrowing
