@@ -20,7 +20,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
             "actual_return_date",
             "book",
         )
-        read_only_fields = ("id", "actual_return_date")
+        read_only_fields = ("id", "actual_return_date", "book")
 
 
 class BorrowingListSerializer(BorrowingSerializer):
