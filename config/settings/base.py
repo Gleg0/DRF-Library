@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     # third party
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "drf_spectacular",
     "drf_spectacular_sidecar",
