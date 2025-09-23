@@ -26,6 +26,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = BorrowingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+
 
         borrowing = BorrowingService.create_borrowing(
             user=request.user,
@@ -34,6 +36,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         )
 
         response_serializer = self.get_serializer(borrowing)
+
         return Response(
             response_serializer.data, status=status.HTTP_201_CREATED
         )
@@ -44,9 +47,6 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         borrowing = BorrowingService.book_return(borrowing)
         serializer = self.get_serializer(borrowing)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
     def get_queryset(self):
         queryset = self.queryset
