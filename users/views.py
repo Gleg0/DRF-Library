@@ -25,8 +25,12 @@ class CreateUserView(generics.CreateAPIView):
     API endpoint for retrieving and updating the authenticated user's profile.
 
     - `GET`: Returns current user's profile using `UserSerializer`.
-    - `PUT` / `PATCH`: Updates profile using `ManageUserSerializer`, which supports password change.
+
+    - `PUT` / `PATCH`: Updates profile using `ManageUserSerializer`,
+      which supports password change.
+
     - Requires authentication.
+
     - Automatically targets `request.user` as the object.
     """
 )

@@ -20,10 +20,16 @@ from drf_spectacular.utils import extend_schema
     description="""
     API endpoint for retrieving and listing payment records.
 
-    - list: Returns a list of payments. Admin users see all payments; regular users see only their own.
+    - list: Returns a list of payments.
+      Admin users see all payments; regular users see only their own.
+
     - retrieve: Returns detailed information about a specific payment.
-    - success: Custom action (GET /payments/success) triggered after a successful Stripe payment.
-    - cancel`: Custom action (GET /payments/cancel) triggered when a payment is cancelled.
+
+    - success: Custom action (GET /payments/success)
+      triggered after a successful Stripe payment.
+
+    - cancel`: Custom action (GET /payments/cancel)
+      triggered when a payment is cancelled.
     """
 )
 class PaymentListRetrieveViewSet(
@@ -50,7 +56,8 @@ class PaymentListRetrieveViewSet(
 
     @extend_schema(
         description="""
-        - `success`: Custom action (`GET /payments/success`) triggered after a successful Stripe payment.
+        - `success`: Custom action (`GET /payments/success`)
+          triggered after a successful Stripe payment.
         """
     )
     @action(detail=False, methods=["get"])
@@ -87,7 +94,8 @@ class PaymentListRetrieveViewSet(
 
     @extend_schema(
         description="""
-        - `cancel`: Custom action (`GET /payments/cancel`) triggered when a payment is cancelled.
+        - `cancel`: Custom action (`GET /payments/cancel`)
+          triggered when a payment is cancelled.
         """
     )
     @action(detail=False, methods=["get"])
