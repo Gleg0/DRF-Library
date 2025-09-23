@@ -58,15 +58,11 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = self.queryset.select_related("book")
+        queryset = self.queryset
 
-        if self.request.user.is_staff:
-            if self.action in ("list", "retrieve"):
-                queryset = queryset.select_related("user")
-        else:
-            if self.action == "list":
-                queryset = queryset.filter(user=self.request.user)
-                self.filterset_class = BorrowingFilter
+        if self.action == "list" and not self.request.user.is_staff:
+            queryset = queryset.filter(user=self.request.user)
+            self.filterset_class = BorrowingFilter
 
         return queryset
 
