@@ -2,6 +2,7 @@ from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +14,6 @@ from books.models import Book
 from borrowings.models import Borrowing
 from payments.models import Payment
 from payments.serializers import PaymentDetailSerializer, PaymentListSerializer
-from drf_spectacular.utils import extend_schema
 
 
 @extend_schema(

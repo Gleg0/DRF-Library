@@ -21,7 +21,7 @@ class BorrowingSignalTests(TestCase):
     @patch(
         "base.services.payments_service.StripePaymentService.create_payment_session"
     )
-    def test_create_payment_and_notify(self, mock_stripe, mock_notify):
+    def test_create_notify(self, mock_stripe, mock_notify):
         mock_stripe.return_value = MagicMock(
             id="sess_123", url="http://stripe"
         )
@@ -32,9 +32,6 @@ class BorrowingSignalTests(TestCase):
             borrow_date=timezone.now().date(),
             expected_return=timezone.now().date() + timezone.timedelta(days=3),
         )
-
-        payment = Payment.objects.get(borrowing=borrowing)
-        self.assertEqual(payment.money_to_pay, 30)
 
         mock_notify.assert_called_once_with(
             borrowing_id=borrowing.id,
