@@ -14,7 +14,7 @@ from books.serializers import BookListSerializer, BookSerializer
     - `list`: Publicly accessible. Returns a paginated list of books using `BookListSerializer`.
     - `retrieve`, `create`, `update`, `destroy`: Restricted to admin users. Authenticated users have read-only access.
     - Uses dynamic serializer selection based on action.
-    - Applies custom permission logic: `AllowAny` for listing, `IsAdminOrIfAuthenticatedReadOnly` for other actions.
+    - Applies custom permission logic: `AllowAny` for listing `IsAdminOrIfAuthenticatedReadOnly` for other actions.
     """
 )
 class BookViewSet(viewsets.ModelViewSet):
