@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "decouple",
+    "debug_toolbar",
     # internal
     "books",
     "users",
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -123,9 +125,11 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for library.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    "AUTHENTICATION_WHITELIST": [],
     "SWAGGER_UI_SETTINGS": {
-        "persistAuthorization": True,
+        "deepLinking": True,
+        "defaultModelRendering": "model",
+        "defaultModelsExpandDepth": 2,
+        "defaultModelExpandDepth": 2,
     },
     "COMPONENT_SPLIT_REQUEST": True,
     "SECURITY_DEFINITIONS": {
@@ -146,3 +150,5 @@ result_serializer = "json"
 accept_content = ["json"]
 
 HOST_DOMAIN = config("HOST_DOMAIN")
+
+DEBUG_TOOLBAR_CONFIG = {"UPDATE_ON_FETCH": True}
