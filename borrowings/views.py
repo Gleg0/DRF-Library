@@ -23,6 +23,21 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
     filterset_class = BorrowingAdminFilter
 
+    def create(self, request, *args, **kwargs):
+        serializer = BorrowingCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        borrowing = BorrowingService.create_borrowing(
+            user=request.user,
+            book=serializer.validated_data["book"],
+            expected_return=serializer.validated_data["expected_return"],
+        )
+
+        response_serializer = self.get_serializer(borrowing)
+        return Response(
+            response_serializer.data, status=status.HTTP_201_CREATED
+        )
+
     @action(detail=True, methods=["post"], url_path="return")
     def borrowing_return(self, request, pk=None):
         borrowing = self.get_object()
