@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -157,13 +157,13 @@ class AuthenticatedBorrowingApiTests(TestCase):
 
         with patch(
             "base.services.payments_service.StripePaymentService.create_payment_session",
-            new=MagicMock(side_effect=Exception("Stripe payment failed"))
+            new=MagicMock(side_effect=Exception("Stripe payment failed")),
         ):
             with self.assertRaises(Exception) as exc:
                 BorrowingService.create_borrowing(
                     user=self.user,
                     book=self.book,
-                    expected_return=expected_return
+                    expected_return=expected_return,
                 )
 
             self.assertIn("Stripe payment failed", str(exc.exception))

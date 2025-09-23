@@ -53,6 +53,14 @@ class BorrowingService:
 
     @staticmethod
     def create_borrowing(user, book, expected_return):
+        if Payment.objects.filter(
+            borrowing__user=user, status=Payment.Status.PENDING
+        ).exists():
+            raise ValidationError(
+                "You can't create new borrowings, "
+                "because you have pending payments"
+            )
+
         with transaction.atomic():
             borrowing = Borrowing.objects.create(
                 user=user, book=book, expected_return=expected_return
