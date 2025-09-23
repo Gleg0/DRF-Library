@@ -20,9 +20,7 @@ class Book(models.Model):
         decimal_places=2,
         validators=(MinValueValidator(Decimal(0.01)),),
     )
-    image = models.ImageField(
-        null=True, blank=True, upload_to="books/photo/"
-    )
+    image = models.ImageField(null=True, blank=True, upload_to="books/photo/")
 
     def __str__(self):
         return f"{self.title} - {self.author}"

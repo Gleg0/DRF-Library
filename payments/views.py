@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -37,7 +37,6 @@ class PaymentListRetrieveViewSet(
         if self.action == "list":
             return PaymentListSerializer
         return PaymentDetailSerializer
-
 
     @extend_schema(
         parameters=[
@@ -80,7 +79,6 @@ class PaymentListRetrieveViewSet(
             return Response({"message": "Payment successful!"})
 
         return Response({"message": "Payment not successful!"})
-
 
     @extend_schema(
         parameters=[

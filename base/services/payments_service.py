@@ -12,6 +12,7 @@ class BasePaymentService(ABC):
     Basic payment service with abstract methods
     for future payment services
     """
+
     @abstractmethod
     def create_payment_session(self, data: dict):
         pass
@@ -34,8 +35,14 @@ class StripePaymentService(BasePaymentService):
         :return:
         stripe session for borrowing service
         """
-        success_url = f"{settings.HOST_DOMAIN}{reverse('payments:payment-success')}?session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{settings.HOST_DOMAIN}{reverse('payments:payment-cancel')}?session_id={{CHECKOUT_SESSION_ID}}"
+        success_url = (
+            f"{settings.HOST_DOMAIN}{reverse('payments:payment-success')}"
+            f"?session_id={{CHECKOUT_SESSION_ID}}"
+        )
+        cancel_url = (
+            f"{settings.HOST_DOMAIN}{reverse('payments:payment-cancel')}"
+            f"?session_id={{CHECKOUT_SESSION_ID}}"
+        )
 
         product_data = {
             "name": data.get("book_name", "Book"),
