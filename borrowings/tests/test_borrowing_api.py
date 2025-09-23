@@ -103,7 +103,7 @@ class AuthenticatedBorrowingApiTests(TestCase):
         self.custom_borrowing.actual_return_date = datetime.date(2025, 9, 27)
         self.custom_borrowing.save()
 
-        res = self.client.get(BORROWINGS_URL, {"actual_return_date": "True"})
+        res = self.client.get(BORROWINGS_URL, {"is_active": "True"})
 
         serializer_sample_borrowing = BorrowingListSerializer(self.borrowing)
         serializer_custom_borrowing = BorrowingListSerializer(
