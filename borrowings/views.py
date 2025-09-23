@@ -26,8 +26,6 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = BorrowingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)
-
 
         borrowing = BorrowingService.create_borrowing(
             user=request.user,
@@ -49,11 +47,15 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = self.queryset.select_related("book")
 
-        if self.action == "list" and not self.request.user.is_staff:
-            queryset = queryset.filter(user=self.request.user)
-            self.filterset_class = BorrowingFilter
+        if self.request.user.is_staff:
+            if self.action in ("list", "retrieve"):
+                queryset = queryset.select_related("user")
+        else:
+            if self.action == "list":
+                queryset = queryset.filter(user=self.request.user)
+                self.filterset_class = BorrowingFilter
 
         return queryset
 
