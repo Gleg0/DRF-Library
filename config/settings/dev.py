@@ -12,7 +12,11 @@ ALLOWED_HOSTS = config(
     cast=lambda v: [s.strip() for s in v.split(",")],
 )
 
+
 INSTALLED_APPS += ["django_extensions"]  # noqa: F403,F405
+
+if DEBUG:
+    INTERNAL_IPS = type(str("c"), (), {"__contains__": lambda *a: True})()
 
 DATABASES = {
     "default": {
