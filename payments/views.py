@@ -42,7 +42,7 @@ class PaymentListRetrieveViewSet(
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name="borrowing_return",
+                name="success transaction",
                 description="Triggered after a successful Stripe payment.",
                 required=False,
                 type=str,
@@ -85,7 +85,7 @@ class PaymentListRetrieveViewSet(
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name="borrowing_return",
+                name="cancel transaction",
                 description=" Triggered when a payment is cancelled.",
                 required=False,
                 type=str,
