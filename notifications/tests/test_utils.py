@@ -18,7 +18,7 @@ class UtilsTests(TestCase):
 
     def test_borrowings_with_overdue_not_found(self):
         text = utils.borrowings_with_overdue()
-        self.assertEqual(text, "Not found")
+        self.assertEqual(text, "📢 Check completed 📢\n" "No records found")
 
     @patch(
         "base.services.payments_service.StripePaymentService.create_payment_session"

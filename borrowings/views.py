@@ -52,7 +52,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="return")
     def borrowing_return(self, request, pk=None):
         borrowing = self.get_object()
-        borrowing = BorrowingService.book_return(borrowing)
+        borrowing = BorrowingService.book_return(self.request.user, borrowing)
         serializer = self.get_serializer(borrowing)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

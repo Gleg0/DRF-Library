@@ -13,7 +13,7 @@ FINE_MULTIPLIER = 2
 
 class BorrowingService:
     @staticmethod
-    def book_return(borrowing):
+    def book_return(user, borrowing):
         """
         Action for return book with transaction, create new payment with FINE
         status if borrowing have overdue and update inventory
@@ -22,23 +22,30 @@ class BorrowingService:
         if borrowing.actual_return_date:
             raise ValidationError("This book is already returned!")
 
-        with transaction.atomic():
-            borrowing.actual_return_date = timezone.now().date()
-            borrowing.save(update_fields=["actual_return_date"])
-            Book.objects.filter(id=borrowing.book_id).update(
-                inventory=F("inventory") + 1
+        if Payment.objects.filter(
+            borrowing__user=user,
+            status=Payment.Status.PENDING,
+            type=Payment.Type.FINE,
+        ).exists():
+            raise ValidationError(
+                "You can't do this action, "
+                "because you have pending payments"
             )
 
+        with transaction.atomic():
             today = timezone.now().date()
-            if (
-                borrowing.actual_return_date
-                and borrowing.expected_return < today
-            ):
+
+            if today <= borrowing.expected_return:
+                borrowing.actual_return_date = today
+                borrowing.save(update_fields=["actual_return_date"])
+
+                Book.objects.filter(id=borrowing.book_id).update(
+                    inventory=F("inventory") + 1
+                )
+
+            if borrowing.expected_return < today:
                 fine_day = (
-                    (
-                        borrowing.actual_return_date
-                        - borrowing.expected_return
-                    ).days
+                    (today - borrowing.expected_return).days
                     * borrowing.book.daily_fee
                     * FINE_MULTIPLIER
                 )

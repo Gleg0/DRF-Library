@@ -27,7 +27,7 @@ class PaymentListRetrieveViewSet(
     def get_queryset(self):
         queryset = self.queryset.select_related(
             "borrowing__book", "borrowing__user"
-        ).order_by("-status", "-id")
+        ).order_by("-id")
 
         if self.request.user.is_staff:
             return queryset
@@ -116,15 +116,16 @@ class PaymentListRetrieveViewSet(
         with transaction.atomic():
             payment.status = Payment.Status.CANCELLED
             payment.save()
-            Borrowing.objects.filter(id=payment.borrowing_id).update(
-                actual_return_date=timezone.now()
-            )
 
             payment_service = StripePaymentService()
             payment_service.mark_session_as_expired(session_id)
 
-            Book.objects.filter(id=payment.borrowing.book_id).update(
-                inventory=F("inventory") + 1
-            )
+            if payment.type != Payment.Type.FINE:
+                Borrowing.objects.filter(id=payment.borrowing_id).update(
+                    actual_return_date=timezone.now()
+                )
+                Book.objects.filter(id=payment.borrowing.book_id).update(
+                    inventory=F("inventory") + 1
+                )
 
         return Response({"message": "Payment was cancelled."})

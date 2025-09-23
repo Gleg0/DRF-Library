@@ -40,5 +40,8 @@ class Payment(models.Model):
         default=0.00,
     )
 
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self):
         return f"Payment {self.id} - {self.type} - {self.status}"
