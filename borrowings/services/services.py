@@ -8,10 +8,17 @@ from books.models import Book
 from borrowings.models import Borrowing
 from payments.models import Payment
 
+FINE_MULTIPLIER = 2
+
 
 class BorrowingService:
     @staticmethod
     def book_return(borrowing):
+        """
+        Action for return book with transaction, create new payment with FINE
+        status if borrowing have overdue and update inventory
+        Increments the book's inventory by +1 after return
+        """
         if borrowing.actual_return_date:
             raise ValidationError("This book is already returned!")
 
@@ -33,10 +40,12 @@ class BorrowingService:
                         - borrowing.expected_return
                     ).days
                     * borrowing.book.daily_fee
-                    * 2
+                    * FINE_MULTIPLIER
                 )
                 data = {
-                    "product_data": {"name": f"Borrowing #{borrowing.id}"},
+                    "borrowing": f"Borrowing #{borrowing.id}",
+                    "book_name": borrowing.book.title,
+                    "book_image_url": borrowing.book.get_image_url(),
                     "unit_amount": fine_day,
                 }
                 payment_service = StripePaymentService()
@@ -53,6 +62,11 @@ class BorrowingService:
 
     @staticmethod
     def create_borrowing(user, book, expected_return):
+        """
+        Action with transaction for creating borrowing
+        and new payment with status PENDING
+        Decrements the book's inventory by -1
+        """
         if Payment.objects.filter(
             borrowing__user=user, status=Payment.Status.PENDING
         ).exists():
@@ -72,7 +86,9 @@ class BorrowingService:
             book_price = borrowing.book.daily_fee
             total_count = rent_day * book_price
             data = {
-                "product_data": {"name": f"Borrowing #{borrowing.id}"},
+                "book_name": borrowing.book.title,
+                "borrowing": f"Borrowing #{borrowing.id}",
+                "book_image_url": borrowing.book.get_image_url(),
                 "unit_amount": total_count,
             }
             payment_service = StripePaymentService()

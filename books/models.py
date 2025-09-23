@@ -21,7 +21,7 @@ class Book(models.Model):
         validators=(MinValueValidator(Decimal(0.01)),),
     )
     image = models.ImageField(
-        null=True, blank=True, upload_to="astronomy/photo/"
+        null=True, blank=True, upload_to="books/photo/"
     )
 
     def __str__(self):
@@ -30,4 +30,4 @@ class Book(models.Model):
     def get_image_url(self):
         if self.image:
             return self.image.url
-        return f"{base.STATIC_URL}img/placeholder.png"
+        return None

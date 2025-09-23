@@ -27,7 +27,7 @@ class PaymentListRetrieveViewSet(
     def get_queryset(self):
         queryset = self.queryset.select_related(
             "borrowing__book", "borrowing__user"
-        ).order_by("-status")
+        ).order_by("-status", "-id")
 
         if self.request.user.is_staff:
             return queryset

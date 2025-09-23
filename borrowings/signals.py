@@ -1,8 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
 
-from base.services.payments_service import StripePaymentService
 from borrowings.models import Borrowing
 from notifications.tasks import notify_borrowings, notify_payment
 from payments.models import Payment
