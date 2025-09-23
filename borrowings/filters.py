@@ -8,7 +8,7 @@ class BorrowingFilter(django_filters.FilterSet):
         field_name="actual_return_date",
         lookup_expr="isnull",
         label="is_active",
-        help_text="Search by active status (Example: ?is_active=true|false)"
+        help_text="Search by active status (Example: ?is_active=true|false)",
     )
 
     class Meta:
