@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from config.settings import base
+
 
 class Book(models.Model):
     class Cover(models.TextChoices):
@@ -18,6 +20,14 @@ class Book(models.Model):
         decimal_places=2,
         validators=(MinValueValidator(Decimal(0.01)),),
     )
+    image = models.ImageField(
+        null=True, blank=True, upload_to="astronomy/photo/"
+    )
 
     def __str__(self):
         return f"{self.title} - {self.author}"
+
+    def get_image_url(self):
+        if self.image:
+            return self.image.url
+        return f"{base.STATIC_URL}img/placeholder.png"
