@@ -1,6 +1,8 @@
 import unittest
+
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from payments.models import Payment
 
 
@@ -34,7 +36,9 @@ class PaymentModelTestCase(unittest.TestCase):
         self.assertIsInstance(field, models.DecimalField)
         self.assertEqual(field.max_digits, 7)
         self.assertEqual(field.decimal_places, 2)
-        self.assertTrue(any(isinstance(v, MinValueValidator) for v in field.validators))
+        self.assertTrue(
+            any(isinstance(v, MinValueValidator) for v in field.validators)
+        )
         self.assertEqual(field.default, 0.00)
 
     def test_str_method(self):

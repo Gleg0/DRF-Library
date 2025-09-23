@@ -1,11 +1,12 @@
 import unittest
+
+from payments.models import Payment
 from payments.serializers import (
-    PaymentListSerializer,
     PaymentDetailSerializer,
     PaymentForBorrowingCreateSerializer,
     PaymentForBorrowingDetailSerializer,
+    PaymentListSerializer,
 )
-from payments.models import Payment
 
 
 class DummyUser:

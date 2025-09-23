@@ -1,5 +1,7 @@
 import unittest
+
 from django.apps import apps
+
 from payments.apps import PaymentsConfig
 
 
@@ -17,6 +19,5 @@ class PaymentsConfigTestCase(unittest.TestCase):
     def test_default_auto_field(self):
         """PaymentsConfig should use BigAutoField as default_auto_field."""
         self.assertEqual(
-            PaymentsConfig.default_auto_field,
-            "django.db.models.BigAutoField"
+            PaymentsConfig.default_auto_field, "django.db.models.BigAutoField"
         )

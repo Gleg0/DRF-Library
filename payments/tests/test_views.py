@@ -1,21 +1,24 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import AnonymousUser, User
-from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework import status
+from rest_framework.test import APIRequestFactory, force_authenticate
 
-from payments.views import PaymentListRetrieveViewSet
 from payments.models import Payment
-
+from payments.views import PaymentListRetrieveViewSet
 
 factory = APIRequestFactory()
 
 
 class PaymentViewSetActionsTestCase(unittest.TestCase):
     def setUp(self):
-        self.success_view = PaymentListRetrieveViewSet.as_view({"get": "success"})
-        self.cancel_view = PaymentListRetrieveViewSet.as_view({"get": "cancel"})
+        self.success_view = PaymentListRetrieveViewSet.as_view(
+            {"get": "success"}
+        )
+        self.cancel_view = PaymentListRetrieveViewSet.as_view(
+            {"get": "cancel"}
+        )
         self.user = User(username="testuser", email="test@example.com")
 
     @patch("payments.views.get_object_or_404")
@@ -61,7 +64,13 @@ class PaymentViewSetActionsTestCase(unittest.TestCase):
     @patch("payments.views.Borrowing.objects.filter")
     @patch("payments.views.Book.objects.filter")
     @patch("payments.views.StripePaymentService")
-    def test_cancel_payment(self, mock_service, mock_book_filter, mock_borrowing_filter, mock_get_object):
+    def test_cancel_payment(
+        self,
+        mock_service,
+        mock_book_filter,
+        mock_borrowing_filter,
+        mock_get_object,
+    ):
         request = factory.get("/payments/cancel/?session_id=xyz789")
         force_authenticate(request, user=self.user)
 
@@ -79,4 +88,6 @@ class PaymentViewSetActionsTestCase(unittest.TestCase):
         payment.save.assert_called_once()
         mock_borrowing_filter.assert_called_once_with(id=1)
         mock_book_filter.assert_called_once_with(id=2)
-        mock_service.return_value.mark_session_as_expired.assert_called_once_with("xyz789")
+        mock_service.return_value.mark_session_as_expired.assert_called_once_with(
+            "xyz789"
+        )
