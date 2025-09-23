@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -16,16 +16,6 @@ from payments.models import Payment
 from payments.serializers import PaymentDetailSerializer, PaymentListSerializer
 
 
-@extend_schema(
-    description="""
-    API endpoint for retrieving and listing payment records.
-
-    - list: Returns a list of payments. Admin users see all payments; regular users see only their own.
-    - retrieve: Returns detailed information about a specific payment.
-    - success: Custom action (GET /payments/success) triggered after a successful Stripe payment.
-    - cancel`: Custom action (GET /payments/cancel) triggered when a payment is cancelled.
-    """
-)
 class PaymentListRetrieveViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -48,10 +38,16 @@ class PaymentListRetrieveViewSet(
             return PaymentListSerializer
         return PaymentDetailSerializer
 
+
     @extend_schema(
-        description="""
-        - `success`: Custom action (`GET /payments/success`) triggered after a successful Stripe payment.
-        """
+        parameters=[
+            OpenApiParameter(
+                name="success transaction",
+                description="Triggered after a successful Stripe payment.",
+                required=False,
+                type=str,
+            ),
+        ]
     )
     @action(detail=False, methods=["get"])
     def success(self, request: Request):
@@ -85,10 +81,16 @@ class PaymentListRetrieveViewSet(
 
         return Response({"message": "Payment not successful!"})
 
+
     @extend_schema(
-        description="""
-        - `cancel`: Custom action (`GET /payments/cancel`) triggered when a payment is cancelled.
-        """
+        parameters=[
+            OpenApiParameter(
+                name="cancel transaction",
+                description=" Triggered when a payment is cancelled.",
+                required=False,
+                type=str,
+            ),
+        ]
     )
     @action(detail=False, methods=["get"])
     def cancel(self, request):
