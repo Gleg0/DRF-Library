@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
@@ -6,8 +7,8 @@ from books.models import Book
 from books.serializers import BookListSerializer, BookSerializer
 
 
-class BookViewSet(viewsets.ModelViewSet):
-    """
+@extend_schema(
+    description="""
     API endpoint for managing books.
 
     - `list`: Publicly accessible. Returns a paginated list of books using `BookListSerializer`.
@@ -15,6 +16,8 @@ class BookViewSet(viewsets.ModelViewSet):
     - Uses dynamic serializer selection based on action.
     - Applies custom permission logic: `AllowAny` for listing, `IsAdminOrIfAuthenticatedReadOnly` for other actions.
     """
+)
+class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
 
     def get_serializer_class(self):

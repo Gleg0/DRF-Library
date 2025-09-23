@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -19,8 +20,8 @@ from borrowings.serializers import (
 from borrowings.services.services import BorrowingService
 
 
-class BorrowingViewSet(viewsets.ModelViewSet):
-    """
+@extend_schema(
+    description="""
     API endpoint for managing borrowings.
 
     - `list`: Returns a filtered list of borrowings. Admin users see all records with `BorrowingAdminFilter`; regular users see only their own borrowings with `BorrowingFilter`.
@@ -32,14 +33,15 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         - `list`, `create`, `borrowing_return`: Requires authentication.
         - Other actions: Admin-only or read-only for authenticated users.
     """
-
+)
+class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
     filterset_class = BorrowingAdminFilter
 
     def create(self, request, *args, **kwargs):
         serializer = BorrowingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         borrowing = BorrowingService.create_borrowing(
             user=request.user,
             book=serializer.validated_data["book"],
