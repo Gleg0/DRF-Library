@@ -2,8 +2,8 @@ from datetime import datetime
 
 from celery import shared_task
 from rest_framework_simplejwt.token_blacklist.models import (
-    OutstandingToken,
     BlacklistedToken,
+    OutstandingToken,
 )
 
 

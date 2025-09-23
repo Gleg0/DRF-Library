@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -20,31 +20,6 @@ from borrowings.serializers import (
 from borrowings.services.services import BorrowingService
 
 
-@extend_schema(
-    description="""
-    API endpoint for managing borrowings.
-
-    - `list`: Returns a filtered list of borrowings.
-      Admin users see all records with `BorrowingAdminFilter`;
-      regular users see only their own borrowings with `BorrowingFilter`.
-
-    - `retrieve`: Returns detailed information about a specific borrowing.
-      Admins receive extended data via `BorrowingAdminDetailSerializer`.
-
-    - `create`: Allows authenticated users to initiate a borrowing.
-      The borrowing is created using `BorrowingService.create_borrowing`.
-
-    - `borrowing_return`: Custom action (`POST /borrowings/{id}/return`)
-      to mark a borrowing as returned. Updates book inventory and borrowing
-      status via `BorrowingService.book_return`.
-
-    - Dynamic serializer selection based on user role and action.
-
-    - Permission logic:
-        - `list`, `create`, `borrowing_return`: Requires authentication.
-        - Other actions: Admin-only or read-only for authenticated users.
-    """
-)
 class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
     filterset_class = BorrowingAdminFilter
@@ -65,6 +40,16 @@ class BorrowingViewSet(viewsets.ModelViewSet):
             response_serializer.data, status=status.HTTP_201_CREATED
         )
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="borrowing_return",
+                description="Mark a borrowing as returned",
+                required=False,
+                type=str,
+            ),
+        ]
+    )
     @action(detail=True, methods=["post"], url_path="return")
     def borrowing_return(self, request, pk=None):
         borrowing = self.get_object()
