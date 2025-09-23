@@ -1,6 +1,10 @@
+import os
 from pathlib import Path
 
 from decouple import config
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -21,6 +25,7 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "decouple",
     "debug_toolbar",
+    "storages",
     # internal
     "books",
     "users",
@@ -139,6 +144,22 @@ SPECTACULAR_SETTINGS = {
             "bearerFormat": "JWT",
             "description": "Input JWT token in format: **Bearer &lt;your_token&gt;**",
         },
+    },
+}
+
+STORAGES = {
+    "default": {
+        "BACKEND": "base.storages.WindowsCompatibleDropboxStorage",
+        "OPTIONS": {
+            "oauth2_access_token": os.getenv("DROPBOX_OAUTH2_ACCESS_TOKEN"),
+            "oauth2_refresh_token": os.getenv("DROPBOX_OAUTH2_REFRESH_TOKEN"),
+            "app_secret": os.getenv("DROPBOX_APP_SECRET"),
+            "app_key": os.getenv("DROPBOX_APP_KEY"),
+            "root_path": os.getenv("DROPBOX_ROOT_PATH"),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
     },
 }
 

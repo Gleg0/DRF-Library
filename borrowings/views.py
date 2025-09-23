@@ -39,7 +39,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = BorrowingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        
         borrowing = BorrowingService.create_borrowing(
             user=request.user,
             book=serializer.validated_data["book"],
