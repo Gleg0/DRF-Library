@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -12,9 +14,9 @@ class Book(models.Model):
     cover = models.CharField(max_length=5, choices=Cover.choices)
     inventory = models.PositiveIntegerField()
     daily_fee = models.DecimalField(
-        max_digits=7,
+        max_digits=8,
         decimal_places=2,
-        validators=(MinValueValidator(0.01),),
+        validators=(MinValueValidator(Decimal(0.01)),)
     )
 
     def __str__(self):
