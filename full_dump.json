@@ -1,0 +1,114 @@
+[
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "jti": "f6f2333cafa64b658560beadd0e766db",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1OTI1MzYwMSwiaWF0IjoxNzU4NjQ4ODAxLCJqdGkiOiJmNmYyMzMzY2FmYTY0YjY1ODU2MGJlYWRkMGU3NjZkYiIsInVzZXJfaWQiOiIxIn0.EkkYdzVlnphg3XeisqRbpFIi-vtU8tsrhUp4pJzNTEc",
+    "created_at": "2025-09-23T17:33:21.861Z",
+    "expires_at": "2025-09-30T17:33:21Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 1,
+  "fields": {
+    "title": "Harry Potter",
+    "author": "J. K. Rowling",
+    "cover": "HARD",
+    "inventory": 24,
+    "daily_fee": "5.00"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 2,
+  "fields": {
+    "title": "Roadside Picnic",
+    "author": "Brother Strugatsky",
+    "cover": "HARD",
+    "inventory": 9,
+    "daily_fee": "8.00"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 3,
+  "fields": {
+    "title": "Twenty Thousand Leagues Under the Sea",
+    "author": "Jules Verne",
+    "cover": "SOFT",
+    "inventory": 18,
+    "daily_fee": "10.00"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 4,
+  "fields": {
+    "title": "Mavka",
+    "author": "Lesya Ukrainka",
+    "cover": "SOFT",
+    "inventory": 0,
+    "daily_fee": "21.50"
+  }
+},
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9owEHR4FtrA3hqlGYoSOx8$HHRnA0dtpUde0bWHMQSG32MDbyXRhtgSXye/jpk++qM=",
+    "last_login": null,
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-09-23T17:33:08.892Z",
+    "email": "admin@admin.com",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$aX98SiueDx9bEsOhlODOgb$SbWiyPK5C7X1T5tqX0fcchyfnzKq44TYTWZOcwpeFBI=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Test",
+    "last_name": "Testovich",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-09-23T17:45:06.873Z",
+    "email": "user@user.com",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "borrowings.borrowing",
+  "pk": 1,
+  "fields": {
+    "borrow_date": "2025-09-23",
+    "expected_return": "2025-09-24",
+    "actual_return_date": null,
+    "book": 1,
+    "user": 1
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 1,
+  "fields": {
+    "status": "PAID",
+    "type": "PAYMENT",
+    "borrowing": 1,
+    "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1fhpQRoDS1HMG7h4kHWBRf6YqDAKkPlquq7K2KzoxvfnpxmNqARD3rFp9#fidkdWxOYHwnPyd1blpxYHZxWjA0Vjx2SWFAY2N0a2pPSnVDXFFGa1x%2FZzZwZkczVVxJYj00Z11EMnJHR19XQmJLREZrSnYydmhmYEpmSTd%2FXTxTMVx1ZFZDajxXUmpOY3Z0X0pzb0twY11VNTVrTXBqd1VOdScpJ2N3amhWYHdzYHcnP3F3cGApJ2dkZm5id2pwa2FGamlqdyc%2FJyZjY2NjY2MnKSdpZHxqcHFRfHVgJz8ndmxrYmlgWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl",
+    "session_id": "cs_test_a1fhpQRoDS1HMG7h4kHWBRf6YqDAKkPlquq7K2KzoxvfnpxmNqARD3rFp9",
+    "money_to_pay": "5.00"
+  }
+}
+]
