@@ -13,8 +13,19 @@ from books.models import Book
 from borrowings.models import Borrowing
 from payments.models import Payment
 from payments.serializers import PaymentDetailSerializer, PaymentListSerializer
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(
+    description="""
+    API endpoint for retrieving and listing payment records.
+
+    - list: Returns a list of payments. Admin users see all payments; regular users see only their own.
+    - retrieve: Returns detailed information about a specific payment.
+    - success: Custom action (GET /payments/success) triggered after a successful Stripe payment.
+    - cancel`: Custom action (GET /payments/cancel) triggered when a payment is cancelled.
+    """
+)
 class PaymentListRetrieveViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -37,11 +48,13 @@ class PaymentListRetrieveViewSet(
             return PaymentListSerializer
         return PaymentDetailSerializer
 
+    @extend_schema(
+        description="""
+        - `success`: Custom action (`GET /payments/success`) triggered after a successful Stripe payment.
+        """
+    )
     @action(detail=False, methods=["get"])
     def success(self, request: Request):
-        """
-        Redirect after successful payment
-        """
         session_id = request.query_params.get("session_id")
 
         if not session_id:
@@ -72,11 +85,13 @@ class PaymentListRetrieveViewSet(
 
         return Response({"message": "Payment not successful!"})
 
+    @extend_schema(
+        description="""
+        - `cancel`: Custom action (`GET /payments/cancel`) triggered when a payment is cancelled.
+        """
+    )
     @action(detail=False, methods=["get"])
     def cancel(self, request):
-        """
-        Redirect if payment was cancelled
-        """
         session_id = request.query_params.get("session_id")
 
         if not session_id:

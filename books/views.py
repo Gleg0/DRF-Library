@@ -7,6 +7,14 @@ from books.serializers import BookListSerializer, BookSerializer
 
 
 class BookViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for managing books.
+
+    - `list`: Publicly accessible. Returns a paginated list of books using `BookListSerializer`.
+    - `retrieve`, `create`, `update`, `destroy`: Restricted to admin users. Authenticated users have read-only access.
+    - Uses dynamic serializer selection based on action.
+    - Applies custom permission logic: `AllowAny` for listing, `IsAdminOrIfAuthenticatedReadOnly` for other actions.
+    """
     queryset = Book.objects.all()
 
     def get_serializer_class(self):

@@ -20,14 +20,26 @@ from borrowings.services.services import BorrowingService
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for managing borrowings.
+
+    - `list`: Returns a filtered list of borrowings. Admin users see all records with `BorrowingAdminFilter`; regular users see only their own borrowings with `BorrowingFilter`.
+    - `retrieve`: Returns detailed information about a specific borrowing. Admins receive extended data via `BorrowingAdminDetailSerializer`.
+    - `create`: Allows authenticated users to initiate a borrowing. The borrowing is created using `BorrowingService.create_borrowing`.
+    - `borrowing_return`: Custom action (`POST /borrowings/{id}/return`) to mark a borrowing as returned. Updates book inventory and borrowing status via `BorrowingService.book_return`.
+    - Dynamic serializer selection based on user role and action.
+    - Permission logic:
+        - `list`, `create`, `borrowing_return`: Requires authentication.
+        - Other actions: Admin-only or read-only for authenticated users.
+    """
+
     queryset = Borrowing.objects.all()
     filterset_class = BorrowingAdminFilter
 
     def create(self, request, *args, **kwargs):
         serializer = BorrowingCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)
-
+        
         borrowing = BorrowingService.create_borrowing(
             user=request.user,
             book=serializer.validated_data["book"],
@@ -48,11 +60,15 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = self.queryset.select_related("book")
 
-        if self.action == "list" and not self.request.user.is_staff:
-            queryset = queryset.filter(user=self.request.user)
-            self.filterset_class = BorrowingFilter
+        if self.request.user.is_staff:
+            if self.action in ("list", "retrieve"):
+                queryset = queryset.select_related("user")
+        else:
+            if self.action == "list":
+                queryset = queryset.filter(user=self.request.user)
+                self.filterset_class = BorrowingFilter
 
         return queryset
 
