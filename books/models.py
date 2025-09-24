@@ -20,9 +20,7 @@ class Book(models.Model):
         decimal_places=2,
         validators=(MinValueValidator(Decimal(0.01)),),
     )
-    image = models.ImageField(
-        null=True, blank=True, upload_to="astronomy/photo/"
-    )
+    image = models.ImageField(null=True, blank=True, upload_to="books/photo/")
 
     def __str__(self):
         return f"{self.title} - {self.author}"
@@ -30,4 +28,4 @@ class Book(models.Model):
     def get_image_url(self):
         if self.image:
             return self.image.url
-        return f"{base.STATIC_URL}img/placeholder.png"
+        return None

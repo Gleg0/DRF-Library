@@ -8,35 +8,51 @@ from books.models import Book
 from borrowings.models import Borrowing
 from payments.models import Payment
 
+FINE_MULTIPLIER = 2
+
 
 class BorrowingService:
     @staticmethod
-    def book_return(borrowing):
+    def book_return(user, borrowing):
+        """
+        Action for return book with transaction, create new payment with FINE
+        status if borrowing have overdue and update inventory
+        Increments the book's inventory by +1 after return
+        """
         if borrowing.actual_return_date:
             raise ValidationError("This book is already returned!")
 
-        with transaction.atomic():
-            borrowing.actual_return_date = timezone.now().date()
-            borrowing.save(update_fields=["actual_return_date"])
-            Book.objects.filter(id=borrowing.book_id).update(
-                inventory=F("inventory") + 1
+        if Payment.objects.filter(
+            borrowing__user=user,
+            status=Payment.Status.PENDING,
+            type=Payment.Type.FINE,
+        ).exists():
+            raise ValidationError(
+                "You can't do this action, "
+                "because you have pending payments"
             )
 
+        with transaction.atomic():
             today = timezone.now().date()
-            if (
-                borrowing.actual_return_date
-                and borrowing.expected_return < today
-            ):
+
+            if today <= borrowing.expected_return:
+                borrowing.actual_return_date = today
+                borrowing.save(update_fields=["actual_return_date"])
+
+                Book.objects.filter(id=borrowing.book_id).update(
+                    inventory=F("inventory") + 1
+                )
+
+            if borrowing.expected_return < today:
                 fine_day = (
-                    (
-                        borrowing.actual_return_date
-                        - borrowing.expected_return
-                    ).days
+                    (today - borrowing.expected_return).days
                     * borrowing.book.daily_fee
-                    * 2
+                    * FINE_MULTIPLIER
                 )
                 data = {
-                    "product_data": {"name": f"Borrowing #{borrowing.id}"},
+                    "borrowing": f"Borrowing #{borrowing.id}",
+                    "book_name": borrowing.book.title,
+                    "book_image_url": borrowing.book.get_image_url(),
                     "unit_amount": fine_day,
                 }
                 payment_service = StripePaymentService()
@@ -53,6 +69,11 @@ class BorrowingService:
 
     @staticmethod
     def create_borrowing(user, book, expected_return):
+        """
+        Action with transaction for creating borrowing
+        and new payment with status PENDING
+        Decrements the book's inventory by -1
+        """
         if Payment.objects.filter(
             borrowing__user=user, status=Payment.Status.PENDING
         ).exists():
@@ -72,7 +93,9 @@ class BorrowingService:
             book_price = borrowing.book.daily_fee
             total_count = rent_day * book_price
             data = {
-                "product_data": {"name": f"Borrowing #{borrowing.id}"},
+                "book_name": borrowing.book.title,
+                "borrowing": f"Borrowing #{borrowing.id}",
+                "book_image_url": borrowing.book.get_image_url(),
                 "unit_amount": total_count,
             }
             payment_service = StripePaymentService()

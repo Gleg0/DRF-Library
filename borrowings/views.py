@@ -1,5 +1,4 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -53,18 +52,21 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="return")
     def borrowing_return(self, request, pk=None):
         borrowing = self.get_object()
-        borrowing = BorrowingService.book_return(borrowing)
+        borrowing = BorrowingService.book_return(self.request.user, borrowing)
         serializer = self.get_serializer(borrowing)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = self.queryset.select_related("book")
 
-        if self.action == "list" and not self.request.user.is_staff:
-            queryset = queryset.filter(user=self.request.user)
-            self.filterset_class = BorrowingFilter
+        if self.action in ("list", "retrieve", "borrowing_return"):
+            if self.request.user.is_staff:
+                queryset = queryset.select_related("user")
+            else:
+                queryset = queryset.filter(user=self.request.user)
+                self.filterset_class = BorrowingFilter
 
-        return queryset
+        return queryset.order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":

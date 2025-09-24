@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -27,7 +27,7 @@ class PaymentListRetrieveViewSet(
     def get_queryset(self):
         queryset = self.queryset.select_related(
             "borrowing__book", "borrowing__user"
-        ).order_by("-status")
+        ).order_by("-id")
 
         if self.request.user.is_staff:
             return queryset
@@ -37,7 +37,6 @@ class PaymentListRetrieveViewSet(
         if self.action == "list":
             return PaymentListSerializer
         return PaymentDetailSerializer
-
 
     @extend_schema(
         parameters=[
@@ -81,7 +80,6 @@ class PaymentListRetrieveViewSet(
 
         return Response({"message": "Payment not successful!"})
 
-
     @extend_schema(
         parameters=[
             OpenApiParameter(
@@ -118,15 +116,16 @@ class PaymentListRetrieveViewSet(
         with transaction.atomic():
             payment.status = Payment.Status.CANCELLED
             payment.save()
-            Borrowing.objects.filter(id=payment.borrowing_id).update(
-                actual_return_date=timezone.now()
-            )
 
             payment_service = StripePaymentService()
             payment_service.mark_session_as_expired(session_id)
 
-            Book.objects.filter(id=payment.borrowing.book_id).update(
-                inventory=F("inventory") + 1
-            )
+            if payment.type != Payment.Type.FINE:
+                Borrowing.objects.filter(id=payment.borrowing_id).update(
+                    actual_return_date=timezone.now()
+                )
+                Book.objects.filter(id=payment.borrowing.book_id).update(
+                    inventory=F("inventory") + 1
+                )
 
         return Response({"message": "Payment was cancelled."})

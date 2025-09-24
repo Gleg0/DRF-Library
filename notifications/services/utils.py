@@ -21,7 +21,7 @@ def borrowings_with_overdue() -> str:
             ]
         )
     else:
-        list_response = "Not found"
+        list_response = "📢 Check completed 📢\n" "No records found"
 
     return list_response
 

@@ -24,8 +24,10 @@ def setup_periodic_tasks(sender, **kwargs):
     """
     Registers periodic Celery tasks.
 
-    - notify_daily: runs every weekday at 10:00 (Mon–Fri), sends notifications about overdue borrowings.
-    - remove_outdated_blacklisted_jwt_from_database: runs daily at midnight (00:00),
+    - notify_daily: runs every weekday at 10:00 (Mon–Fri),
+      sends notifications about overdue borrowings.
+    - remove_outdated_blacklisted_jwt_from_database:
+      runs daily at midnight (00:00),
       cleans up expired JWT tokens from the database.
     """
     from notifications.tasks import notify_daily
@@ -36,6 +38,7 @@ def setup_periodic_tasks(sender, **kwargs):
     )
 
     from users.tasks import remove_outdated_blacklisted_jwt_from_database
+
     sender.add_periodic_task(
         crontab(hour=0, minute=0),
         remove_outdated_blacklisted_jwt_from_database.s(),
