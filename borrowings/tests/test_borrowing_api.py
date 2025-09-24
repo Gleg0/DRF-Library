@@ -92,7 +92,7 @@ class AuthenticatedBorrowingApiTests(TestCase):
         )
 
     def test_borrowing_list(self):
-        borrowings = Borrowing.objects.all()
+        borrowings = Borrowing.objects.all().order_by("-id")
         serializer = BorrowingListSerializer(borrowings, many=True)
         res = self.client.get(BORROWINGS_URL)
 
@@ -224,7 +224,7 @@ class AdminBorrowingTest(TestCase):
         )
 
     def test_admin_borrowing_list(self):
-        borrowings = Borrowing.objects.all()
+        borrowings = Borrowing.objects.all().order_by("-id")
         serializer = BorrowingAdminListSerializer(borrowings, many=True)
         res = self.client.get(BORROWINGS_URL)
 
