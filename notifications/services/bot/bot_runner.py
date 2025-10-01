@@ -1,5 +1,5 @@
 from notifications.services import utils
-from notifications.tg_bot import TELEGRAM_CHAT_ID, bot
+from notifications.services.bot.tg_bot import TELEGRAM_CHAT_ID, bot
 
 
 @bot.message_handler(commands=["list"])

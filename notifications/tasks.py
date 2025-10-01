@@ -1,7 +1,7 @@
 from celery import shared_task
 
 from notifications.services import utils
-from notifications.tg_bot import send_message
+from notifications.services.bot.tg_bot import send_message
 
 
 @shared_task
