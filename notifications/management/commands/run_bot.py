@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from notifications.bot_runner import run
+from notifications.services.bot.bot_runner import run
 
 
 class Command(BaseCommand):
