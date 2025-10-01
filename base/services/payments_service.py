@@ -4,8 +4,6 @@ import stripe
 from django.conf import settings
 from django.urls import reverse
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
 
 class BasePaymentService(ABC):
     """
@@ -27,6 +25,13 @@ class BasePaymentService(ABC):
 
 
 class StripePaymentService(BasePaymentService):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def create_payment_session(self, data: dict):
         """
         Method for create stripe checkout session
