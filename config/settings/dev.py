@@ -1,7 +1,9 @@
 from datetime import timedelta
 
+import stripe
 from decouple import config
 
+from base.services.payments_service import StripePaymentService
 from config.settings.base import *  # noqa: F403,F405
 
 DEBUG = config("DEBUG", default=True, cast=bool)
@@ -42,3 +44,6 @@ MESSAGE_TELEGRAM_BOT_TOKEN = config(
 
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
+
+stripe.api_key = STRIPE_SECRET_KEY
+PAYMENT_SERVICE = StripePaymentService()

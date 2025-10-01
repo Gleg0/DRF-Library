@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
@@ -98,8 +99,7 @@ class BorrowingService:
                 "book_image_url": borrowing.book.get_image_url(),
                 "unit_amount": total_count,
             }
-            payment_service = StripePaymentService()
-            session = payment_service.create_payment_session(data)
+            session = settings.PAYMENT_SERVICE.create_payment_session(data)
 
             Payment.objects.create(
                 borrowing=borrowing,
