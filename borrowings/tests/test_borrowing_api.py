@@ -49,8 +49,7 @@ def sample_borrowing(user, **params):
         book = sample_book()
 
     defaults = {
-        "borrow_date": datetime.date(2025, 9, 23),
-        "expected_return": datetime.date(2025, 9, 25),
+        "expected_return": datetime.date.today() + datetime.timedelta(days=3),
         "book": book,
         "user": user,
     }
@@ -86,8 +85,7 @@ class AuthenticatedBorrowingApiTests(TestCase):
         self.borrowing = sample_borrowing(self.user)
         self.custom_borrowing = sample_borrowing(
             user=self.user,
-            borrow_date=datetime.date(2025, 9, 23),
-            expected_return=datetime.date(2025, 9, 28),
+            expected_return=datetime.date.today() + datetime.timedelta(days=3),
             book=self.custom_book,
         )
 
@@ -126,8 +124,7 @@ class AuthenticatedBorrowingApiTests(TestCase):
     def test_create_borrowing(self):
         initial_inventory = self.custom_book.inventory
         payload = {
-            "borrow_date": "2025-09-23",
-            "expected_return": "2025-09-25",
+            "expected_return": datetime.date.today() + datetime.timedelta(days=3),
             "book": self.custom_book.id,
         }
 
